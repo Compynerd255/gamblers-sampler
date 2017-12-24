@@ -27,7 +27,7 @@ This module is a successor to that module written in the C# programming language
 # How to Use This Module
 
 This module can be used both as a .NET DLL and as source. It can be imported into any C# project, 
-including both .NET 4 projects, Mono projects, and Unity projects.
+including .NET 4 projects, Mono projects, and Unity projects.
 
 Once you have the module imported, either use one of the built-in factory methods to create a sampler:
 ```
@@ -36,7 +36,9 @@ ISampler uniform_d6 = Samplers.UniformD6();
 ISampler gamblers_d20 = Samplers.GamblersD20();
 ```
 
-Or, create your own with a custom set of outcomes:
+Or, create your own with a custom set of outcomes and adjustment parameter. 
+The weights can be arbitrarily set (and can even be irrational values with no adverse performance penalty!) 
+and the weight will be multiplied by the adjustment parameter each time the outcome is sampled:
 ```
 using Betafreak.GamblersSampler;
 ISampler gamblers_name_picker = new GamblersSampler<string>(
@@ -63,6 +65,17 @@ if (shot_value > shot_chance * 100) {
 for (int i = 0; i < 10; i++) {
     Console.Writeline("Person {0}) {1}", i, weighted_name_picker.Next());
 }
+```
+
+If you need to continue using the same sampler between executions, you can save the state of the sampler:
+```
+var samplerState = gamblers_d20.ExportState();
+string s = Newtonsoft.Json.SerializeObject(samplerState);
+
+// ...
+
+var samplerState = Newtonsoft.Json.DeserializeObject(s);
+ISampler gamblers_d20 = new GamblersSampler<int>(samplerState);
 ```
 
 # Acknowledgments
