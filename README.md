@@ -56,7 +56,7 @@ ISampler weighted_name_picker = new GamblersSampler<string>(
 Once you have the sampler, simply sample it when you need a random outcome:
 ```
 int shot_value = gamblers_d20.Next();
-if (shot_value > shot_chance * 100) {
+if (shot_value < shot_chance * 20) {
     // shot hits
 } else {
     // shot misses
