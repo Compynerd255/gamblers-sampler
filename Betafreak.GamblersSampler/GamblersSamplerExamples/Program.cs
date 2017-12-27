@@ -29,7 +29,7 @@ namespace GamblersSamplerExamples
             {
                 for (int j = 0; j < Console.WindowWidth; j++)
                 {
-                    Console.Write(d20.Next() > 16 ? '*' : '_');
+                    Console.Write(d20.Next() < 16 ? '*' : '_');
                 }
             }
             Console.WriteLine();
