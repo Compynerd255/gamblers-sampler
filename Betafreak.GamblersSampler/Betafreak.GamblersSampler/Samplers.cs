@@ -21,6 +21,32 @@ namespace Betafreak.GamblersSampler
         }
 
         /// <summary>
+        /// Provides a biased coin that forever retains the given odds
+        /// </summary>
+        /// <param name="headsWeight">The probability of getting heads</param>
+        /// <returns></returns>
+        public static ISampler<bool> UniformBiasedCoin(double headsWeight)
+        {
+            return new GamblersSampler<bool>(new WeightedOutcome<bool>[]{
+                new WeightedOutcome<bool>(true, headsWeight),
+                new WeightedOutcome<bool>(false, 1 - headsWeight)
+            }, 1);
+        }
+
+        /// <summary>
+        /// Provides a biased coin subject to the Gambler's Fallacy
+        /// </summary>
+        /// <param name="headsWeight">The probability of getting heads</param>
+        /// <returns></returns>
+        public static ISampler<bool> GamblersBiasedCoin(double headsWeight)
+        {
+            return new GamblersSampler<bool>(new WeightedOutcome<bool>[]{
+                new WeightedOutcome<bool>(true, headsWeight),
+                new WeightedOutcome<bool>(false, 1 - headsWeight)
+            }, 0.75);
+        }
+
+        /// <summary>
         /// Provides a sampler representing a uniform six-sided die
         /// </summary>
         /// <returns></returns>

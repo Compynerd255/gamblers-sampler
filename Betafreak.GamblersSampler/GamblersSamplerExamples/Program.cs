@@ -11,16 +11,28 @@ namespace GamblersSamplerExamples
     {
         static void Main(string[] args)
         {
-            ISampler<int> uniform = Samplers.UniformD20();
+            ISampler<bool> uniform = Samplers.UniformBiasedCoin(.6);
             Console.WriteLine("Uniform Sample:");
-            Simulate80PercentXCOMShots(uniform);
+            SimulateCoinFlips(uniform);
 
-            ISampler<int> gamblers = Samplers.GamblersD20();
+            ISampler<bool> gamblers = Samplers.GamblersBiasedCoin(.6);
             Console.WriteLine("Gambler's Sample:");
-            Simulate80PercentXCOMShots(gamblers);
+            SimulateCoinFlips(gamblers);
 
             Console.ReadLine();
             // Simulate a set of 20 
+        }
+
+        static void SimulateCoinFlips(ISampler<bool> coin)
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < Console.WindowWidth; j++)
+                {
+                    Console.Write(coin.Next() ? 'H' : 'T');
+                }
+            }
+            Console.WriteLine();
         }
 
         static void Simulate80PercentXCOMShots(ISampler<int> d20)
