@@ -121,26 +121,39 @@ namespace Betafreak.GamblersSampler
 
         public T Next()
         {
-            // Get the sample
-            Node node = root;
-            double pos = random.NextDouble() * root.Total;
-            while (!node.IsLeaf)
+            T outcome;
+            double weightDifference;
+            root = Next_Internal(root,
+                random.NextDouble() * root.Total,
+                out outcome,
+                out weightDifference);
+
+            return outcome;
+        }
+
+        private Node Next_Internal(Node node, double pos, out T outcome, out double weightDifference)
+        {
+            if (node.IsLeaf)
+            {
+                outcome = node.Outcome;
+                weightDifference = node.Total - (node.Total * severity);
+                node.Total -= weightDifference;
+            }
+            else
             {
                 if (pos < node.Division)
                 {
-                    node = node.Lower;
+                    node.Lower = Next_Internal(node.Lower, pos, out outcome, out weightDifference);
+                    node.Total -= weightDifference;
+                    node.Division -= weightDifference;
                 }
                 else
                 {
-                    pos -= node.Division;
-                    node = node.Upper;
+                    node.Upper = Next_Internal(node.Upper, pos - node.Division, out outcome, out weightDifference);
+                    node.Total -= weightDifference;
                 }
             }
-            T result = node.Outcome;
-
-            // TODO: Modify the tree when you get the sample
-
-            return result;
+            return node;
         }
 
         public SamplerExportState<T> ExportState()
