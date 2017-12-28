@@ -11,21 +11,28 @@ namespace GamblersSamplerExamples
     {
         static void Main(string[] args)
         {
-            ISampler<bool> uniform = Samplers.UniformBiasedCoin(.6);
+            ISampler<bool> uniformCoin = Samplers.UniformBiasedCoin(.6);
             Console.WriteLine("Uniform Sample:");
-            SimulateCoinFlips(uniform);
+            SimulateCoinFlips(uniformCoin);
 
-            ISampler<bool> gamblers = Samplers.GamblersBiasedCoin(.6);
+            ISampler<bool> gamblersCoin = Samplers.GamblersBiasedCoin(.6);
             Console.WriteLine("Gambler's Sample:");
-            SimulateCoinFlips(gamblers);
+            SimulateCoinFlips(gamblersCoin);
+
+            ISampler<int> uniformD20 = Samplers.UniformD20();
+            Console.WriteLine("Uniform Sample:");
+            Simulate95PercentXCOMShots(uniformD20);
+
+            ISampler<int> gamblersD20 = Samplers.GamblersD20();
+            Console.WriteLine("Gambler's Sample:");
+            Simulate95PercentXCOMShots(gamblersD20);
 
             Console.ReadLine();
-            // Simulate a set of 20 
         }
 
         static void SimulateCoinFlips(ISampler<bool> coin)
         {
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 12; i++)
             {
                 for (int j = 0; j < Console.WindowWidth; j++)
                 {
@@ -35,13 +42,13 @@ namespace GamblersSamplerExamples
             Console.WriteLine();
         }
 
-        static void Simulate80PercentXCOMShots(ISampler<int> d20)
+        static void Simulate95PercentXCOMShots(ISampler<int> d20)
         {
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 12; i++)
             {
                 for (int j = 0; j < Console.WindowWidth; j++)
                 {
-                    Console.Write(d20.Next() < 16 ? '*' : '_');
+                    Console.Write(d20.Next() > 1 ? '*' : '_');
                 }
             }
             Console.WriteLine();

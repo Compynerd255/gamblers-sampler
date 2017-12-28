@@ -43,7 +43,7 @@ namespace Betafreak.GamblersSampler
             return new GamblersSampler<bool>(new WeightedOutcome<bool>[]{
                 new WeightedOutcome<bool>(true, headsWeight),
                 new WeightedOutcome<bool>(false, 1 - headsWeight)
-            }, 0.75);
+            }, 0.1);
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace Betafreak.GamblersSampler
         /// <returns></returns>
         public static ISampler<int> GamblersD6()
         {
-            return new GamblersSampler<int>(Range(1, 6), 0.75);
+            return new GamblersSampler<int>(Range(1, 6), 0.1);
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Betafreak.GamblersSampler
         /// <returns></returns>
         public static ISampler<int> GamblersD20()
         {
-            return new GamblersSampler<int>(Range(1, 20), 0.75);
+            return new GamblersSampler<int>(Range(1, 20), 0.1);
         }
 
         /// <summary>
