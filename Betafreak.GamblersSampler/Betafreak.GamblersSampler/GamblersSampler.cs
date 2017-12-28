@@ -5,7 +5,7 @@ using System.Text;
 namespace Betafreak.GamblersSampler
 {
     /// <summary>
-    /// General implementation of <see cref="ISampler"/>.
+    /// General implementation of <see cref="ISampler(T)"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class GamblersSampler<T> : ISampler<T>
@@ -45,11 +45,11 @@ namespace Betafreak.GamblersSampler
             {
                 if (IsLeaf)
                 {
-                    return $"Leaf:{Outcome.ToString()}: {Total}";
+                    return $"Leaf: {Outcome.ToString()} ({Total})";
                 }
                 else
                 {
-                    return $"Branch:{Division}/{Total-Division}({Total})";
+                    return $"Branch: {Division}/{Total-Division} ({Total})";
                 }
             }
         }
@@ -57,6 +57,7 @@ namespace Betafreak.GamblersSampler
         private Random random;
         private Node root;
         private double severity;
+        private int outcomeCount;
 
         public GamblersSampler(IEnumerable<T> outcomes, double severity)
         {
@@ -83,8 +84,10 @@ namespace Betafreak.GamblersSampler
 
         private void Initialize(IEnumerable<WeightedOutcome<T>> outcomes, double severity)
         {
+            outcomeCount = 0;
             foreach (var outcome in outcomes)
             {
+                outcomeCount++;
                 root = AddOutcome(root, outcome);
             }
             if (root == null)
@@ -122,38 +125,61 @@ namespace Betafreak.GamblersSampler
         public T Next()
         {
             T outcome;
-            double weightDifference;
-            root = Next_Internal(root,
-                random.NextDouble() * root.Total,
-                out outcome,
-                out weightDifference);
+            double startingTotal = root.Total;
+            double pos = random.NextDouble() * startingTotal;
+            root = Next_Internal(root, pos, out outcome);
+
+            if (root.Total < 0)
+            {
+                throw new InvalidOperationException();
+            }
+            if (root.Total < outcomeCount / 2)
+            {
+                Scale_Node(root, 3);
+            }
+            if (root.Total > outcomeCount * 2)
+            {
+                Scale_Node(root, 1 / 3);
+            }
 
             return outcome;
         }
 
-        private Node Next_Internal(Node node, double pos, out T outcome, out double weightDifference)
+        private Node Next_Internal(Node node, double pos, out T outcome)
         {
+            double startingTotal = node.Total;
             if (node.IsLeaf)
             {
                 outcome = node.Outcome;
-                weightDifference = node.Total - (node.Total * severity);
+                double weightDifference = node.Total - (node.Total * severity);
+                if (weightDifference > node.Total) weightDifference = node.Total;
                 node.Total -= weightDifference;
             }
             else
             {
                 if (pos < node.Division)
                 {
-                    node.Lower = Next_Internal(node.Lower, pos, out outcome, out weightDifference);
-                    node.Total -= weightDifference;
-                    node.Division -= weightDifference;
+                    node.Lower = Next_Internal(node.Lower, pos, out outcome);
                 }
                 else
                 {
-                    node.Upper = Next_Internal(node.Upper, pos - node.Division, out outcome, out weightDifference);
-                    node.Total -= weightDifference;
+                    node.Upper = Next_Internal(node.Upper, pos - node.Division, out outcome);
                 }
+                node.Total = node.Lower.Total + node.Upper.Total;
+                node.Division = node.Lower.Total;
             }
             return node;
+        }
+
+        private void Scale_Node(Node node, double scaleFactor)
+        {
+            node.Total *= scaleFactor;
+            node.Division *= scaleFactor;
+            if (!node.IsLeaf)
+            {
+                Scale_Node(node.Lower, scaleFactor);
+                Scale_Node(node.Upper, scaleFactor);
+            }
         }
 
         public SamplerExportState<T> ExportState()
