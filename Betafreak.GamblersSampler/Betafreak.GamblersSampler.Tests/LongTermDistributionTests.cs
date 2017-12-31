@@ -7,22 +7,45 @@ namespace Betafreak.GamblersSampler.Tests
     public class LongTermDistributionTests
     {
         [TestMethod]
-        public void FairCoin_ShowsFairness()
+        public void UniformFairCoin_ShowsFairness()
+        {
+            UniformCoin_ShowsDistribution(.5, 500);
+        }
+
+        [TestMethod]
+        public void UniformBiasedCoin_ShowsBias()
+        {
+            UniformCoin_ShowsDistribution(.8, 500);
+            UniformCoin_ShowsDistribution(.3, 500);
+            UniformCoin_ShowsDistribution(.95, 500);
+        }
+
+        [TestMethod]
+        public void GamblersFairCoin_ShowsFairness()
         {
             GamblersCoin_ShowsDistribution(.5, 500);
         }
 
         [TestMethod]
-        public void BiasedCoin_ShowsBias()
+        public void GamblersBiasedCoin_ShowsBias()
         {
             GamblersCoin_ShowsDistribution(.8, 500);
             GamblersCoin_ShowsDistribution(.3, 500);
             GamblersCoin_ShowsDistribution(.95, 500);
         }
 
+        private void UniformCoin_ShowsDistribution(double p, int n)
+        {
+            Coin_ShowsDistribution(Samplers.UniformBiasedCoin(p), p, n);
+        }
+
         private void GamblersCoin_ShowsDistribution(double p, int n)
         {
-            ISampler<bool> coin = Samplers.GamblersBiasedCoin(p);
+            Coin_ShowsDistribution(Samplers.GamblersBiasedCoin(p), p, n);
+        }
+
+        private void Coin_ShowsDistribution(ISampler<bool> coin, double p, int n)
+        {
             int trueCount = 0;
             int falseCount = 0;
             for (int i = 0; i < n; i++)
