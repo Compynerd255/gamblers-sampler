@@ -144,7 +144,18 @@ namespace Betafreak.GamblersSampler
             }
             else
             {
-                // TODO: Use the sample count to adjust pos
+                /*
+                 * TODO: Use the sample counts to weight against outcomes
+                 * that have been sampled more often.
+                 * 
+                 * It may be observed that our old algorithm - multiplying the
+                 * weight of the sampled unit by a constant - caused every
+                 * outcome to be sampled with equal probability even though the
+                 * actual probability values are being preserved in the tree.
+                 * Our new algorithm, which will use these sample counts, must
+                 * avoid this bias and actually sample units according to the
+                 * uneven biases.
+                 */
                 if (pos < node.Division)
                 {
                     node.Lower = Next_Internal(node.Lower, pos, out outcome);
