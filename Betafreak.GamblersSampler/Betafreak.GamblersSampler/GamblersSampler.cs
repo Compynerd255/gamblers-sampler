@@ -14,9 +14,9 @@ namespace Betafreak.GamblersSampler
         {
             public bool IsLeaf;
             public T Outcome;
-            public double StartingTotal;
-            public double CurrentTotal;
+            public double Total;
             public double Division;
+            public int SampleCount;
             public Node Lower;
             public Node Upper;
 
@@ -27,8 +27,8 @@ namespace Betafreak.GamblersSampler
                 Node node = new Node();
                 node.IsLeaf = true;
                 node.Outcome = outcome;
-                node.StartingTotal = weight;
-                node.CurrentTotal = weight;
+                node.Total = weight;
+                node.SampleCount = 0;
                 return node;
             }
 
@@ -36,9 +36,9 @@ namespace Betafreak.GamblersSampler
             {
                 Node node = new Node();
                 node.IsLeaf = false;
-                node.StartingTotal = lower.StartingTotal + upper.StartingTotal;
-                node.CurrentTotal = lower.CurrentTotal + upper.CurrentTotal;
-                node.Division = lower.CurrentTotal;
+                node.Total = lower.Total + upper.Total;
+                node.Division = lower.Total;
+                node.SampleCount = lower.SampleCount + upper.SampleCount;
                 node.Lower = lower;
                 node.Upper = upper;
                 return node;
@@ -46,14 +46,18 @@ namespace Betafreak.GamblersSampler
 
             public override string ToString()
             {
+                string body;
+                string footer;
                 if (IsLeaf)
                 {
-                    return $"Leaf: {Outcome.ToString()} ({CurrentTotal} vs. {StartingTotal})";
+                    body = $"Leaf: {Outcome.ToString()} ";
                 }
                 else
                 {
-                    return $"Branch: {Division}/{CurrentTotal-Division} ({CurrentTotal} vs. {StartingTotal})";
+                    body = $"Branch: {Division}/{Total-Division} ";
                 }
+                footer = $"({Total}, {SampleCount} times)";
+                return body + footer;
             }
         }
 
@@ -110,7 +114,7 @@ namespace Betafreak.GamblersSampler
             }
             else
             {
-                if (node.Division < node.CurrentTotal / 2)
+                if (node.Division < node.Total / 2)
                 {
                     node = Node.ParentNode(AddOutcome(node.Lower, outcome), node.Upper);
                 }
@@ -125,35 +129,22 @@ namespace Betafreak.GamblersSampler
         public T Next()
         {
             T outcome;
-            double startingTotal = root.CurrentTotal;
-            double pos = random.NextDouble() * startingTotal;
+            double pos = random.NextDouble() * root.Total;
             root = Next_Internal(root, pos, out outcome);
-
-            if (root.CurrentTotal < 0)
-            {
-                throw new InvalidOperationException();
-            }
-            if (root.CurrentTotal < root.StartingTotal / 2 
-                || root.CurrentTotal > root.StartingTotal * 2)
-            {
-                Scale_Node(root, root.StartingTotal / root.CurrentTotal);
-            }
 
             return outcome;
         }
 
         private Node Next_Internal(Node node, double pos, out T outcome)
         {
-            double startingTotal = node.CurrentTotal;
             if (node.IsLeaf)
             {
                 outcome = node.Outcome;
-                double weightDifference = node.CurrentTotal - (node.CurrentTotal * severity);
-                if (weightDifference > node.CurrentTotal) weightDifference = node.CurrentTotal;
-                node.CurrentTotal -= weightDifference;
+                node.SampleCount++;
             }
             else
             {
+                // TODO: Use the sample count to adjust pos
                 if (pos < node.Division)
                 {
                     node.Lower = Next_Internal(node.Lower, pos, out outcome);
@@ -162,21 +153,9 @@ namespace Betafreak.GamblersSampler
                 {
                     node.Upper = Next_Internal(node.Upper, pos - node.Division, out outcome);
                 }
-                node.CurrentTotal = node.Lower.CurrentTotal + node.Upper.CurrentTotal;
-                node.Division = node.Lower.CurrentTotal;
+                node.SampleCount = node.Lower.SampleCount + node.Upper.SampleCount;
             }
             return node;
-        }
-
-        private void Scale_Node(Node node, double scaleFactor)
-        {
-            node.CurrentTotal *= scaleFactor;
-            node.Division *= scaleFactor;
-            if (!node.IsLeaf)
-            {
-                Scale_Node(node.Lower, scaleFactor);
-                Scale_Node(node.Upper, scaleFactor);
-            }
         }
 
         public SamplerExportState<T> ExportState()
