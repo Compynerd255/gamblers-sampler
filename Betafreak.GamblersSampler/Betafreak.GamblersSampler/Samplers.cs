@@ -21,6 +21,24 @@ namespace Betafreak.GamblersSampler
         }
 
         /// <summary>
+        /// Provides a simple fair coin that forever retains fairness
+        /// </summary>
+        /// <returns></returns>
+        public static ISampler<bool> UniformFairCoin()
+        {
+            return new GamblersSampler<bool>(new bool[] { true, false }, 1);
+        }
+
+        /// <summary>
+        /// Provides a fair coin that biases against outcomes that have been gotten before
+        /// </summary>
+        /// <returns></returns>
+        public static ISampler<bool> GamblersFairCoin()
+        {
+            return new GamblersSampler<bool>(new bool[] { true, false }, 0.4);
+        }
+
+        /// <summary>
         /// Provides a biased coin that forever retains the given odds
         /// </summary>
         /// <param name="headsWeight">The probability of getting heads</param>
@@ -52,7 +70,7 @@ namespace Betafreak.GamblersSampler
         /// <returns></returns>
         public static ISampler<int> UniformD6()
         {
-            return new GamblersSampler<int>(Range(1, 6), 1);
+            return new UniformGamblersSampler<int>(Range(1, 6), 1);
         }
 
         /// <summary>
@@ -61,7 +79,7 @@ namespace Betafreak.GamblersSampler
         /// <returns></returns>
         public static ISampler<int> GamblersD6()
         {
-            return new GamblersSampler<int>(Range(1, 6), 0.1);
+            return new UniformGamblersSampler<int>(Range(1, 6), 0.1);
         }
 
         /// <summary>
@@ -70,7 +88,7 @@ namespace Betafreak.GamblersSampler
         /// <returns></returns>
         public static ISampler<int> UniformD20()
         {
-            return new GamblersSampler<int>(Range(1, 20), 1);
+            return new UniformGamblersSampler<int>(Range(1, 20), 1);
         }
 
         /// <summary>
@@ -79,7 +97,7 @@ namespace Betafreak.GamblersSampler
         /// <returns></returns>
         public static ISampler<int> GamblersD20()
         {
-            return new GamblersSampler<int>(Range(1, 20), 0.1);
+            return new UniformGamblersSampler<int>(Range(1, 20), 0.1);
         }
 
         /// <summary>
