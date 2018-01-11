@@ -21,6 +21,24 @@ namespace Betafreak.GamblersSampler
         }
 
         /// <summary>
+        /// Provides a simple fair coin that forever retains fairness
+        /// </summary>
+        /// <returns></returns>
+        public static ISampler<bool> UniformFairCoin()
+        {
+            return new GamblersSampler<bool>(new bool[] { true, false }, 1);
+        }
+
+        /// <summary>
+        /// Provides a fair coin that biases against outcomes that have been gotten before
+        /// </summary>
+        /// <returns></returns>
+        public static ISampler<bool> GamblersFairCoin()
+        {
+            return new GamblersSampler<bool>(new bool[] { true, false }, 0.4);
+        }
+
+        /// <summary>
         /// Provides a biased coin that forever retains the given odds
         /// </summary>
         /// <param name="headsWeight">The probability of getting heads</param>
