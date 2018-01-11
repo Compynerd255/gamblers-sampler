@@ -52,7 +52,7 @@ namespace Betafreak.GamblersSampler
         /// <returns></returns>
         public static ISampler<int> UniformD6()
         {
-            return new GamblersSampler<int>(Range(1, 6), 1);
+            return new UniformGamblersSampler<int>(Range(1, 6), 1);
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace Betafreak.GamblersSampler
         /// <returns></returns>
         public static ISampler<int> GamblersD6()
         {
-            return new GamblersSampler<int>(Range(1, 6), 0.1);
+            return new UniformGamblersSampler<int>(Range(1, 6), 0.1);
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Betafreak.GamblersSampler
         /// <returns></returns>
         public static ISampler<int> UniformD20()
         {
-            return new GamblersSampler<int>(Range(1, 20), 1);
+            return new UniformGamblersSampler<int>(Range(1, 20), 1);
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Betafreak.GamblersSampler
         /// <returns></returns>
         public static ISampler<int> GamblersD20()
         {
-            return new GamblersSampler<int>(Range(1, 20), 0.1);
+            return new UniformGamblersSampler<int>(Range(1, 20), 0.1);
         }
 
         /// <summary>
