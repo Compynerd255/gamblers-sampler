@@ -8,7 +8,7 @@ namespace Betafreak.GamblersSampler
     /// General implementation of <see cref="ISampler(T)"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class GamblersSampler<T> : ISampler<T>
+    public class WeightedGamblersSampler<T> : ISampler<T>
     {
         private class Node
         {
@@ -59,7 +59,7 @@ namespace Betafreak.GamblersSampler
         private double severity;
         private int outcomeCount;
 
-        public GamblersSampler(IEnumerable<T> outcomes, double severity)
+        public WeightedGamblersSampler(IEnumerable<T> outcomes, double severity)
         {
             Initialize(ConvertToWeightedOutcomeSequence(outcomes), severity);
         }
@@ -72,12 +72,12 @@ namespace Betafreak.GamblersSampler
             }
         }
 
-        public GamblersSampler(IEnumerable<WeightedOutcome<T>> outcomes, double severity)
+        public WeightedGamblersSampler(IEnumerable<WeightedOutcome<T>> outcomes, double severity)
         {
             Initialize(outcomes, severity);
         }
 
-        public GamblersSampler(SamplerExportState<T> state)
+        public WeightedGamblersSampler(SamplerExportState<T> state)
         {
             throw new NotImplementedException();
         }
