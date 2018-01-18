@@ -74,11 +74,6 @@ namespace Betafreak.GamblersSampler
             }
         }
 
-        public UniformGamblersSampler(SamplerExportState<T> state)
-        {
-            throw new NotImplementedException();
-        }
-
         private void Initialize(IEnumerable<WeightedOutcome<T>> outcomes, double severity)
         {
             foreach (var outcome in outcomes)
@@ -172,11 +167,6 @@ namespace Betafreak.GamblersSampler
                 Scale_Node(node.Lower, scaleFactor);
                 Scale_Node(node.Upper, scaleFactor);
             }
-        }
-
-        public SamplerExportState<T> ExportState()
-        {
-            throw new NotImplementedException();
         }
 
         public void Force(T outcome)

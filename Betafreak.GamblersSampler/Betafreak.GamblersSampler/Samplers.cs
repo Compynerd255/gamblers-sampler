@@ -10,17 +10,6 @@ namespace Betafreak.GamblersSampler
     public static class Samplers
     {
         /// <summary>
-        /// Loads a Gambler's Sampler from the given sampler state
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="state"></param>
-        /// <returns></returns>
-        public static ISampler<T> FromExportState<T>(SamplerExportState<T> state)
-        {
-            return new GamblersSampler<T>(state);
-        }
-
-        /// <summary>
         /// Provides a simple fair coin that forever retains fairness
         /// </summary>
         /// <returns></returns>

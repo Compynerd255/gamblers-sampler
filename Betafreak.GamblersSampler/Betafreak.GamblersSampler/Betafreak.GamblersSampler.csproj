@@ -39,9 +39,10 @@
     <Compile Include="GamblersSampler.cs" />
     <Compile Include="ISampler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SamplerExportState.cs" />
+    <Compile Include="ISamplerExportState.cs" />
     <Compile Include="Samplers.cs" />
     <Compile Include="UniformGamblersSampler.cs" />
+    <Compile Include="UniformRealSampler.cs" />
     <Compile Include="WeightedOutcome.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

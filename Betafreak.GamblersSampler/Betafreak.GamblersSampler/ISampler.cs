@@ -28,11 +28,25 @@ namespace Betafreak.GamblersSampler
         /// </remarks>
         /// <param name="outcome"></param>
         void Force(T outcome);
+    }
 
+    /// <summary>
+    /// Represents an <see cref="ISampler{T}"/> whose state can be saved between executions
+    /// </summary>
+    /// <remarks>
+    /// All ISampler objects should strive to implement <see cref="IExportableSampler{T, ExportT}"/>,
+    /// because many applications of the sampler need to save state to create the proper
+    /// intuitive perception of luck.
+    /// </remarks>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="ExportT"></typeparam>
+    public interface IExportableSampler<T, ExportT> : ISampler<T>
+    {
         /// <summary>
-        /// Exports the sampler's state to a serializable object
+        /// Exports the state of the sampler to a serializable object
+        /// so that it can be re-created between executions
         /// </summary>
         /// <returns></returns>
-        SamplerExportState<T> ExportState();
+        ExportT ExportState();
     }
 }
