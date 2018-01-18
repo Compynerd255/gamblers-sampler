@@ -6,9 +6,23 @@ namespace Betafreak.GamblersSampler
 {
     class UniformRealSampler : IExportableSampler<double, int>
     {
+        int seed;
+        Random random;
+
+        public UniformRealSampler() : this(Environment.TickCount)
+        {
+            
+        }
+
+        public UniformRealSampler(int seed)
+        {
+            this.seed = seed;
+            random = new Random(seed);
+        }
+
         public double Next()
         {
-            throw new NotImplementedException();
+            return random.NextDouble();
         }
 
         public void Force(double outcome)
@@ -18,8 +32,8 @@ namespace Betafreak.GamblersSampler
 
         public int ExportState()
         {
-            // just return the current state of the seed object
-            throw new NotImplementedException();
+            // just return the generator's seed
+            return seed;
         }
     }
 }

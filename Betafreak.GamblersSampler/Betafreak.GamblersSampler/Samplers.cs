@@ -15,7 +15,8 @@ namespace Betafreak.GamblersSampler
         /// <returns></returns>
         public static ISampler<bool> UniformFairCoin()
         {
-            return new GamblersSampler<bool>(new bool[] { true, false }, 1);
+            //return new GamblersSampler<bool>(new bool[] { true, false }, 1);
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -24,7 +25,8 @@ namespace Betafreak.GamblersSampler
         /// <returns></returns>
         public static ISampler<bool> GamblersFairCoin()
         {
-            return new GamblersSampler<bool>(new bool[] { true, false }, 0.4);
+            //return new GamblersSampler<bool>(new bool[] { true, false }, 0.4);
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -34,10 +36,11 @@ namespace Betafreak.GamblersSampler
         /// <returns></returns>
         public static ISampler<bool> UniformBiasedCoin(double headsWeight)
         {
-            return new GamblersSampler<bool>(new WeightedOutcome<bool>[]{
-                new WeightedOutcome<bool>(true, headsWeight),
-                new WeightedOutcome<bool>(false, 1 - headsWeight)
-            }, 1);
+            //return new GamblersSampler<bool>(new WeightedOutcome<bool>[]{
+            //    new WeightedOutcome<bool>(true, headsWeight),
+            //    new WeightedOutcome<bool>(false, 1 - headsWeight)
+            //}, 1);
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -47,10 +50,11 @@ namespace Betafreak.GamblersSampler
         /// <returns></returns>
         public static ISampler<bool> GamblersBiasedCoin(double headsWeight)
         {
-            return new GamblersSampler<bool>(new WeightedOutcome<bool>[]{
-                new WeightedOutcome<bool>(true, headsWeight),
-                new WeightedOutcome<bool>(false, 1 - headsWeight)
-            }, 0.1);
+            //return new GamblersSampler<bool>(new WeightedOutcome<bool>[]{
+            //    new WeightedOutcome<bool>(true, headsWeight),
+            //    new WeightedOutcome<bool>(false, 1 - headsWeight)
+            //}, 0.1);
+            throw new NotImplementedException();
         }
 
         /// <summary>

@@ -57,7 +57,7 @@ namespace Betafreak.GamblersSampler
             }
         }
 
-        private Random random;
+        private ISampler<double> baseSampler;
         private Node root;
         private double severity;
 
@@ -85,7 +85,7 @@ namespace Betafreak.GamblersSampler
                 throw new ArgumentException("Outcomes should be non-empty");
             }
             this.severity = severity;
-            this.random = new Random();
+            this.baseSampler = new UniformRealSampler();
         }
 
         private Node AddOutcome(Node node, WeightedOutcome<T> outcome)
@@ -116,7 +116,7 @@ namespace Betafreak.GamblersSampler
         {
             T outcome;
             double startingTotal = root.CurrentTotal;
-            double pos = random.NextDouble() * startingTotal;
+            double pos = baseSampler.Next() * startingTotal;
             root = Next_Internal(root, pos, out outcome);
 
             if (root.CurrentTotal < 0)

@@ -36,7 +36,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GamblersSampler.cs" />
     <Compile Include="ISampler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ISamplerExportState.cs" />
