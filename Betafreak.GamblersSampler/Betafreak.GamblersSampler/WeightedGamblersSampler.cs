@@ -8,7 +8,7 @@ namespace Betafreak.GamblersSampler
     /// General implementation of <see cref="ISampler(T)"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class WeightedGamblersSampler<T> : ISampler<T>
+    public class GamblersSampler<T> : ISampler<T>
     {
         private class Node
         {
@@ -16,7 +16,6 @@ namespace Betafreak.GamblersSampler
             public T Outcome;
             public double Total;
             public double Division;
-            public int SampleCount;
             public Node Lower;
             public Node Upper;
 
@@ -28,7 +27,6 @@ namespace Betafreak.GamblersSampler
                 node.IsLeaf = true;
                 node.Outcome = outcome;
                 node.Total = weight;
-                node.SampleCount = 0;
                 return node;
             }
 
@@ -38,7 +36,6 @@ namespace Betafreak.GamblersSampler
                 node.IsLeaf = false;
                 node.Total = lower.Total + upper.Total;
                 node.Division = lower.Total;
-                node.SampleCount = lower.SampleCount + upper.SampleCount;
                 node.Lower = lower;
                 node.Upper = upper;
                 return node;
@@ -46,26 +43,23 @@ namespace Betafreak.GamblersSampler
 
             public override string ToString()
             {
-                string body;
-                string footer;
                 if (IsLeaf)
                 {
-                    body = $"Leaf: {Outcome.ToString()} ";
+                    return $"Leaf: {Outcome.ToString()} ({Total})";
                 }
                 else
                 {
-                    body = $"Branch: {Division}/{Total-Division} ";
+                    return $"Branch: {Division}/{Total - Division} ({Total})";
                 }
-                footer = $"({Total}, {SampleCount} times)";
-                return body + footer;
             }
         }
 
         private Random random;
         private Node root;
         private double severity;
+        private int outcomeCount;
 
-        public WeightedGamblersSampler(IEnumerable<T> outcomes, double severity)
+        public GamblersSampler(IEnumerable<T> outcomes, double severity)
         {
             Initialize(ConvertToWeightedOutcomeSequence(outcomes), severity);
         }
@@ -78,20 +72,22 @@ namespace Betafreak.GamblersSampler
             }
         }
 
-        public WeightedGamblersSampler(IEnumerable<WeightedOutcome<T>> outcomes, double severity)
+        public GamblersSampler(IEnumerable<WeightedOutcome<T>> outcomes, double severity)
         {
             Initialize(outcomes, severity);
         }
 
-        public WeightedGamblersSampler(SamplerExportState<T> state)
+        public GamblersSampler(SamplerExportState<T> state)
         {
             throw new NotImplementedException();
         }
 
         private void Initialize(IEnumerable<WeightedOutcome<T>> outcomes, double severity)
         {
+            outcomeCount = 0;
             foreach (var outcome in outcomes)
             {
+                outcomeCount++;
                 root = AddOutcome(root, outcome);
             }
             if (root == null)
@@ -129,33 +125,38 @@ namespace Betafreak.GamblersSampler
         public T Next()
         {
             T outcome;
-            double pos = random.NextDouble() * root.Total;
+            double startingTotal = root.Total;
+            double pos = random.NextDouble() * startingTotal;
             root = Next_Internal(root, pos, out outcome);
+
+            if (root.Total < 0)
+            {
+                throw new InvalidOperationException();
+            }
+            if (root.Total < outcomeCount / 2)
+            {
+                Scale_Node(root, 3);
+            }
+            if (root.Total > outcomeCount * 2)
+            {
+                Scale_Node(root, 1 / 3);
+            }
 
             return outcome;
         }
 
         private Node Next_Internal(Node node, double pos, out T outcome)
         {
+            double startingTotal = node.Total;
             if (node.IsLeaf)
             {
                 outcome = node.Outcome;
-                node.SampleCount++;
+                double weightDifference = node.Total - (node.Total * severity);
+                if (weightDifference > node.Total) weightDifference = node.Total;
+                node.Total -= weightDifference;
             }
             else
             {
-                /*
-                 * TODO: Use the sample counts to weight against outcomes
-                 * that have been sampled more often.
-                 * 
-                 * It may be observed that our old algorithm - multiplying the
-                 * weight of the sampled unit by a constant - caused every
-                 * outcome to be sampled with equal probability even though the
-                 * actual probability values are being preserved in the tree.
-                 * Our new algorithm, which will use these sample counts, must
-                 * avoid this bias and actually sample units according to the
-                 * uneven biases.
-                 */
                 if (pos < node.Division)
                 {
                     node.Lower = Next_Internal(node.Lower, pos, out outcome);
@@ -164,9 +165,21 @@ namespace Betafreak.GamblersSampler
                 {
                     node.Upper = Next_Internal(node.Upper, pos - node.Division, out outcome);
                 }
-                node.SampleCount = node.Lower.SampleCount + node.Upper.SampleCount;
+                node.Total = node.Lower.Total + node.Upper.Total;
+                node.Division = node.Lower.Total;
             }
             return node;
+        }
+
+        private void Scale_Node(Node node, double scaleFactor)
+        {
+            node.Total *= scaleFactor;
+            node.Division *= scaleFactor;
+            if (!node.IsLeaf)
+            {
+                Scale_Node(node.Lower, scaleFactor);
+                Scale_Node(node.Upper, scaleFactor);
+            }
         }
 
         public SamplerExportState<T> ExportState()
