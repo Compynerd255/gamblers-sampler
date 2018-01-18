@@ -26,7 +26,7 @@ namespace Betafreak.GamblersSampler
         /// <returns></returns>
         public static ISampler<bool> UniformFairCoin()
         {
-            return new WeightedGamblersSampler<bool>(new bool[] { true, false }, 1);
+            return new WeightedGamblersSampler<bool>(new bool[] { true, false }, 0);
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Betafreak.GamblersSampler
         /// <returns></returns>
         public static ISampler<bool> GamblersFairCoin()
         {
-            return new WeightedGamblersSampler<bool>(new bool[] { true, false }, 0.4);
+            return new WeightedGamblersSampler<bool>(new bool[] { true, false }, 0.6);
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Betafreak.GamblersSampler
             return new WeightedGamblersSampler<bool>(new WeightedOutcome<bool>[]{
                 new WeightedOutcome<bool>(true, headsWeight),
                 new WeightedOutcome<bool>(false, 1 - headsWeight)
-            }, 1);
+            }, 0);
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace Betafreak.GamblersSampler
             return new WeightedGamblersSampler<bool>(new WeightedOutcome<bool>[]{
                 new WeightedOutcome<bool>(true, headsWeight),
                 new WeightedOutcome<bool>(false, 1 - headsWeight)
-            }, 0.1);
+            }, 0.6);
         }
 
         /// <summary>

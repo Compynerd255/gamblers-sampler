@@ -94,6 +94,11 @@ namespace Betafreak.GamblersSampler
             {
                 throw new ArgumentException("Outcomes should be non-empty");
             }
+            if (Math.Abs(root.Total) < 0.000001)
+            {
+                throw new ArgumentException("Outcomes should have a non-zero total");
+            }
+            Scale_Node(root, outcomeCount / root.Total);
             this.severity = severity;
             this.random = new Random();
         }
@@ -151,7 +156,7 @@ namespace Betafreak.GamblersSampler
             if (node.IsLeaf)
             {
                 outcome = node.Outcome;
-                double weightDifference = node.Total - (node.Total * severity);
+                double weightDifference = severity;
                 if (weightDifference > node.Total) weightDifference = node.Total;
                 node.Total -= weightDifference;
             }
