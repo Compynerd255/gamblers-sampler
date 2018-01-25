@@ -41,6 +41,7 @@
     <Compile Include="ISamplerExportState.cs" />
     <Compile Include="Samplers.cs" />
     <Compile Include="UniformGamblersSampler.cs" />
+    <Compile Include="UniformRealGamblersSampler.cs" />
     <Compile Include="UniformRealSampler.cs" />
     <Compile Include="WeightedOutcome.cs" />
   </ItemGroup>
